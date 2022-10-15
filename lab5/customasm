@@ -1,0 +1,17 @@
+#ruledef
+{
+    load $r{rt}, {address}($r{rd}) => 0b011000 @ rd`5 @ rt`5 @ address`16  
+
+	ori $r{rt}, $r{rs}, {imm} => 0b010000 @ rs`5 @ rt`5 @ imm`16
+	beq $r{ra}, $r{rb}, {address} => 0b100100 @ ra`5 @ rb`5 @ address`16
+	
+	jmp {address} => 0b110000 @ {address-1}`26 
+
+	add $r{rt}, $r{ra}, $r{rb} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000000
+	sub $r{rt}, $r{ra}, $r{rb} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000001 
+	or $r{rt}, $r{ra}, $r{rb} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000010
+	and $r{rt}, $r{ra}, $r{rb} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000011 
+	xor $r{rt}, $r{ra}, $r{rb} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000100
+	com $r{rt}, $r{ra} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000100
+	neg $r{rt}, $r{ra} => 0b000001 @ ra`5 @ rb`5 @ rt`5 @ 0b00000000100
+}
