@@ -29,12 +29,17 @@ module tester2();
     nanocpu     CPU(p_address, p_data, d_address, d_data, mem_wr, clock, nreset);
     oldmemory 	DATAMEM(d_data,d_address[15:0],mem_wr,clock);
     
+    wire [31:0] r4 = CPU.REGFILE.regs[4];
+    wire [31:0] r5 = CPU.REGFILE.regs[5];
+    wire [31:0] r6 = CPU.REGFILE.regs[6];
+    
     always
         #5 clock = ~clock;
         
     initial begin
         #0  clock=0; p_data = 0; nreset = 0;
-        #10 nreset = 1;
+        #6 nreset = 1;
+        #6  nreset = 0;
         #10 p_data = 32'b011000_00100_00101_00000_00000000000; // LW $r5, 0($r4) = 1
         #10 p_data = 32'b011000_00101_00100_00000_00000000000; // LW $r4, 0($r5) = 2
         #10 p_data = 32'b000001_00100_00101_00110_00000000000; // ADD $r6, $r5, $r4
@@ -45,6 +50,7 @@ module tester2();
         #10 p_data = 32'b000001_00100_00101_00110_00000000101; // -A $r6, $r5, $r4
         #10 p_data = 32'b000001_00100_00101_00110_00000000110; // NOT A $r6, $r5, $r4
         #10 p_data = 32'b000001_00100_00101_00110_00000000111; // NOT B $r6, $r5, $r4
+        #10 nreset = 1;
         #10 $finish;
     end
 
