@@ -26,8 +26,9 @@ module clockReducer #(
     output reg targetClk,
     input clk  
 );
-    parameter CNT_COUNT = CLOCK_FREQ / (2*TARGET_FREQ);
-    parameter CNT_WIDTH = $clog2(CNT_COUNT);
+
+    localparam CNT_COUNT = CLOCK_FREQ / (2*TARGET_FREQ);
+    localparam CNT_WIDTH = $clog2(CNT_COUNT);
     
     reg [CNT_WIDTH-1:0] counter;
     
