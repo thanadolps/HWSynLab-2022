@@ -32,10 +32,12 @@ module VGARender(
 
     localparam WIDTH = 640;
     localparam HEIGHT = 480;
+    localparam M_H = 158;
     
-    wire frame, sec;
+    wire frame, sec, halfsec;
     clockReducer #(.TARGET_FREQ (60)) frame_timer(frame, clk); // 60 fps timer
-    clockReducer #(.CLOCK_FREQ(60), .TARGET_FREQ (1)) second_timer(sec, frame); // 1 fps timer
+    clockReducer #(.CLOCK_FREQ(60), .TARGET_FREQ (1)) sec_timer(sec, frame); // 1 fps timer
+    clockReducer #(.CLOCK_FREQ(60), .TARGET_FREQ (2)) halfsec_timer(halfsec, frame); // 2 fps timer
 
     ////////////////////////////////
     // Load images
@@ -43,21 +45,6 @@ module VGARender(
     // Background is stored in half resolution of the screen
     reg [11:0] background [0:(HEIGHT/2)*(WIDTH/2)-1];
     initial $readmemh("bg.mem", background);
-
-    // Digits
-    localparam M_H = 158;
-    localparam M0_W = 90;
-    localparam M1_W = 58;
-    localparam M2_W = 87;
-    localparam M3_W = 91;
-    localparam M4_W = 99;
-    localparam M5_W = 90;
-    localparam M6_W = 92;
-    localparam M7_W = 81;
-    localparam M8_W = 94;
-    localparam M9_W = 90;
-
-
 
     ////////////////////////////////
     // Background rendering
@@ -70,25 +57,23 @@ module VGARender(
 
     ////////////////////////////////
     // staging
-    reg [9:0] px=0, py=0;
-
-    always @(posedge frame) begin
-        px <= (px + 1)%WIDTH;
-        py <= (px + 2)%HEIGHT;
-    end
-
-    reg [3:0] state = 0;
+    reg [4:0] char1 = 0;
     always @(posedge sec) begin
-        state <= (state + 1)%10;
+        char1 <= (char1 + 1)%17;
     end
     
+    reg [4:0] char2 = 0;
+    always @(posedge halfsec) begin
+        char2 <= (char2 + 1)%17;
+    end
+
     ////////////////////////////////
     // Text rendering
 
-    wire  digit_mask;
+    wire [4:0] char = (x > WIDTH/2) ? char2 : char1;
+
     wire [9:0] mw;
-    wire [19:0] digit_i;
-    VGACharRender (digit_mask, mw, digit_i, (state + (x > WIDTH/2))%10);
+    VGACharSize (mw, char);
 
     wire [19:0] digit1_i;
     spriteSampler digit1_sampler(
@@ -100,8 +85,10 @@ module VGARender(
         .i(digit2_i), .x(x), .y(y), .w(mw), .h(M_H), .px(3*WIDTH/4), .py(HEIGHT/2), .msx(20), .msy(20)
     );
 
-    assign digit_i = digit1_i ? digit1_i : digit2_i;
+    wire [19:0] digit_i = digit1_i ? digit1_i : digit2_i;
     
+    wire digit_mask;
+    VGACharRender (digit_mask, digit_i, char);
 
     ////////////////////////////////
     // Combine color

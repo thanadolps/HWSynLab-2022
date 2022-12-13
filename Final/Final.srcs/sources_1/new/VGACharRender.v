@@ -22,9 +22,8 @@
 
 module VGACharRender(
     output reg render,
-    output reg [9:0] w,
     input [19:0] i,
-    input [3:0] type
+    input [4:0] char // 0123456789+-*/=Na
 );
 
     localparam M_H = 158;
@@ -38,6 +37,13 @@ module VGACharRender(
     localparam M7_W = 81;
     localparam M8_W = 94;
     localparam M9_W = 90;
+    localparam M_add_W = 96;
+    localparam M_sub_W = 62;
+    localparam M_mul_W = 60;
+    localparam M_div_W = 77;
+    localparam M_eq_W = 76;
+    localparam M_N_W = 93;
+    localparam M_a_W = 79;
 
     reg [0:0] mask_0 [0:M_H*M0_W-1];
     reg [0:0] mask_1 [0:M_H*M1_W-1];
@@ -49,11 +55,13 @@ module VGACharRender(
     reg [0:0] mask_7 [0:M_H*M7_W-1];
     reg [0:0] mask_8 [0:M_H*M8_W-1];
     reg [0:0] mask_9 [0:M_H*M9_W-1];
-    // reg [0:0] mask_add [0:158*96-1];
-    // reg [0:0] mask_sub [0:158*62-1];
-    // reg [0:0] mask_mul [0:158*60-1];
-    // reg [0:0] mask_div [0:158*77-1];
-    // reg [0:0] mask_eq [0:158*76-1];
+    reg [0:0] mask_add [0:M_H*M_add_W-1];
+    reg [0:0] mask_sub [0:M_H*M_sub_W-1];
+    reg [0:0] mask_mul [0:M_H*M_mul_W-1];
+    reg [0:0] mask_div [0:M_H*M_div_W-1];
+    reg [0:0] mask_eq [0:M_H*M_eq_W-1];
+    reg [0:0] mask_N [0:M_H*M_N_W-1];
+    reg [0:0] mask_a [0:M_H*M_a_W-1];
 
     initial begin
         $readmemb("0.mem", mask_0);
@@ -66,15 +74,17 @@ module VGACharRender(
         $readmemb("7.mem", mask_7);
         $readmemb("8.mem", mask_8);
         $readmemb("9.mem", mask_9);
-        // $readmemb("add.mem", mask_add);
-        // $readmemb("sub.mem", mask_sub);
-        // $readmemb("mul.mem", mask_mul);
-        // $readmemb("div.mem", mask_div);
-        // $readmemb("eq.mem", mask_eq);
+        $readmemb("add.mem", mask_add);
+        $readmemb("sub.mem", mask_sub);
+        $readmemb("mul.mem", mask_mul);
+        $readmemb("div.mem", mask_div);
+        $readmemb("eq.mem", mask_eq);
+        $readmemb("N.mem", mask_N);
+        $readmemb("a.mem", mask_a);
     end
 
-    always @(type, i) begin
-        case (type)
+    always @(char, i) begin
+        case (char)
             0: render = mask_0[i];
             1: render = mask_1[i];
             2: render = mask_2[i];
@@ -85,23 +95,14 @@ module VGACharRender(
             7: render = mask_7[i];
             8: render = mask_8[i];
             9: render = mask_9[i];
+            10: render = mask_add[i];
+            11: render = mask_sub[i];
+            12: render = mask_mul[i];
+            13: render = mask_div[i];
+            14: render = mask_eq[i];
+            15: render = mask_N[i];
+            16: render = mask_a[i];
             default: render = 0;
-        endcase
-    end
-
-    always @(type) begin
-        case (type)
-            0: w = M0_W;
-            1: w = M1_W;
-            2: w = M2_W;
-            3: w = M3_W;
-            4: w = M4_W; 
-            5: w = M5_W;
-            6: w = M6_W;
-            7: w = M7_W;
-            8: w = M8_W;
-            9: w = M9_W;
-            default: w = M0_W;
         endcase
     end
 

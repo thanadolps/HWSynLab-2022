@@ -21,22 +21,22 @@
 
 
 module system(
-    output [6:0] seg,
-    output dp,
-    output [3:0] an,
-    output [2:0] led,
+    // output [6:0] seg,
+    // output dp,
+    // output [3:0] an,
+    // output [2:0] led,
     output [3:0] vgaRed,
     output [3:0] vgaGreen,
     output [3:0] vgaBlue,
     output Hsync,
     output Vsync,
-    input RsRx,
+    // input RsRx,
     input clk
     );
         
     ////////////////////////////////////////
     // Clock
-    wire targetClk;
+    // wire targetClk;
     // clockReducer #(.TARGET_FREQ(400)) sevenseg_timing(targetClk, clk);
 
 
