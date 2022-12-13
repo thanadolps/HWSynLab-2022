@@ -32,7 +32,6 @@ module VGARender(
 
     localparam WIDTH = 640;
     localparam HEIGHT = 480;
-    localparam M_H = 158;
     
     wire frame, sec, halfsec;
     clockReducer #(.TARGET_FREQ (60)) frame_timer(frame, clk); // 60 fps timer
@@ -48,12 +47,11 @@ module VGARender(
 
     ////////////////////////////////
     // Background rendering
-    wire [19:0] bg_i;
+    wire [9:0] bg_x, bg_y;
     spriteSampler bg_sampler(
-        .i(bg_i), .x(x), .y(y), .w(WIDTH/2), .h(HEIGHT/2), .px(0), .py(0), .msx(5), .msy(5)
+        .sample_x(bg_x), .sample_y(bg_y), .x(x), .y(y), .w(WIDTH/2), .h(HEIGHT/2), .px(0), .py(0), .msx(5), .msy(5)
     );
-    wire [11:0] bg_color = background[bg_i];
-
+    wire [11:0] bg_color = background[WIDTH*bg_y + bg_x];
 
     ////////////////////////////////
     // staging
@@ -71,28 +69,22 @@ module VGARender(
     // Text rendering
 
     wire [4:0] char = (x > WIDTH/2) ? char2 : char1;
+    wire [9:0] px = (x > WIDTH/2) ? 3*WIDTH/4 : WIDTH/4;
 
-    wire [9:0] mw;
-    VGACharSize (mw, char);
+    wire [9:0] mw, mh;
+    VGACharSize (mh, mw, char);
 
-    wire [19:0] digit1_i;
-    spriteSampler digit1_sampler(
-        .i(digit1_i), .x(x), .y(y), .w(mw), .h(M_H), .px(WIDTH/4), .py(HEIGHT/2), .msx(20), .msy(20)
+    wire [9:0] digit_x, digit_y;
+    spriteSampler digit_sampler(
+        .sample_x(digit_x), .sample_y(digit_y), .x(x), .y(y), .w(mw), .h(mh), .px(px), .py(HEIGHT/2), .msx(20), .msy(20)
     );
-    
-    wire [19:0] digit2_i;
-    spriteSampler digit2_sampler(
-        .i(digit2_i), .x(x), .y(y), .w(mw), .h(M_H), .px(3*WIDTH/4), .py(HEIGHT/2), .msx(20), .msy(20)
-    );
-
-    wire [19:0] digit_i = digit1_i ? digit1_i : digit2_i;
     
     wire digit_mask;
-    VGACharRender (digit_mask, digit_i, char);
+    VGACharRender (digit_mask, digit_x, digit_y, char);
 
     ////////////////////////////////
     // Combine color
     assign color = digit_mask ? 12'hFFF : bg_color;
-    
+
 
 endmodule

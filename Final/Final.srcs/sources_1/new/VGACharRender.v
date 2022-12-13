@@ -22,7 +22,8 @@
 
 module VGACharRender(
     output reg render,
-    input [19:0] i,
+    input [9:0] x,
+    input [9:0] y,
     input [4:0] char // 0123456789+-*/=Na
 );
 
@@ -82,6 +83,10 @@ module VGACharRender(
         $readmemb("N.mem", mask_N);
         $readmemb("a.mem", mask_a);
     end
+
+    wire [9:0] h, w;
+    VGACharSize (h, w,char);
+    wire [19:0] i = w*y + x;
 
     always @(char, i) begin
         case (char)

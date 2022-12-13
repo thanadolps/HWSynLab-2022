@@ -21,6 +21,7 @@
 
 
 module VGACharSize(
+    output [9:0] h,
     output reg [9:0] w,
     input [4:0] char // 0123456789+-*/=Na
 );
@@ -44,6 +45,7 @@ module VGACharSize(
     localparam M_N_W = 93;
     localparam M_a_W = 79;
 
+    assign h = M_H;
 
     always @(char) begin
         case (char)
