@@ -89,26 +89,30 @@ module VGACharRender(
     wire [19:0] i = w*y + x;
 
     always @(char, i) begin
-        case (char)
-            0: render = mask_0[i];
-            1: render = mask_1[i];
-            2: render = mask_2[i];
-            3: render = mask_3[i];
-            4: render = mask_4[i]; 
-            5: render = mask_5[i];
-            6: render = mask_6[i];
-            7: render = mask_7[i];
-            8: render = mask_8[i];
-            9: render = mask_9[i];
-            10: render = mask_add[i];
-            11: render = mask_sub[i];
-            12: render = mask_mul[i];
-            13: render = mask_div[i];
-            14: render = mask_eq[i];
-            15: render = mask_N[i];
-            16: render = mask_a[i];
-            default: render = 0;
-        endcase
+        if ((x < w) & (y < h)) begin
+            case (char)
+                0: render = mask_0[i];
+                1: render = mask_1[i];
+                2: render = mask_2[i];
+                3: render = mask_3[i];
+                4: render = mask_4[i]; 
+                5: render = mask_5[i];
+                6: render = mask_6[i];
+                7: render = mask_7[i];
+                8: render = mask_8[i];
+                9: render = mask_9[i];
+                10: render = mask_add[i];
+                11: render = mask_sub[i];
+                12: render = mask_mul[i];
+                13: render = mask_div[i];
+                14: render = mask_eq[i];
+                15: render = mask_N[i];
+                16: render = mask_a[i];
+                default: render = 0;
+            endcase
+        end else begin
+            render = 0;
+        end
     end
 
 endmodule

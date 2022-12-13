@@ -65,26 +65,36 @@ module VGARender(
         char2 <= (char2 + 1)%17;
     end
 
+    wire [4:0] char3 = (char1+1)%17;
+    wire [4:0] char4 = (char2+2)%17;
+
     ////////////////////////////////
     // Text rendering
 
-    wire [4:0] char = (x > WIDTH/2) ? char2 : char1;
-    wire [9:0] px = (x > WIDTH/2) ? 3*WIDTH/4 : WIDTH/4;
-
-    wire [9:0] mw, mh;
-    VGACharSize (mh, mw, char);
-
-    wire [9:0] digit_x, digit_y;
+    wire [9:0] line_x, line_y;
+    wire [9:0] ms = (char1 == 0) ? 20 : 10;
     spriteSampler digit_sampler(
-        .sample_x(digit_x), .sample_y(digit_y), .x(x), .y(y), .w(mw), .h(mh), .px(px), .py(HEIGHT/2), .msx(20), .msy(20)
+        .sample_x(line_x), .sample_y(line_y), .x(x), .y(y), .w(-1), .h(HEIGHT), .px(WIDTH/6), .py(HEIGHT/2), .msx(ms), .msy(ms)
+    );
+
+    wire [9:0] char_x, char_y;
+    wire [4:0] char;
+    VGATextFlow #(.N(4)) text_flow(
+    	.char     (char),
+        .offset_x (char_x ),
+        .offset_y (char_y ),
+        .chars    ({char1, char2, (char3 > 5) ? char3 : 5'b11111, char4}),
+        .x        (line_x),
+        .y        (line_y)
     );
     
-    wire digit_mask;
-    VGACharRender (digit_mask, digit_x, digit_y, char);
+    
+    wire char_mask;
+    VGACharRender char_render(char_mask, char_x, char_y, char);
 
     ////////////////////////////////
     // Combine color
-    assign color = digit_mask ? 12'hFFF : bg_color;
+    assign color = char_mask ? 12'hFFF : bg_color;
 
 
 endmodule
