@@ -64,14 +64,12 @@ module system(
     ////////////////////////////////////////
     // ExpressionStack
     wire [15:0] value_left, value_right, calculation;
-    wire [2:0] op; 
-    wire invalid;
+    wire [2:0] op;
 
     ExpressionStack expr(
     	.value_left  (value_left  ),
         .op          (op          ),
         .value_right (value_right ),
-        .invalid     (invalid     ),
         .action      (s_action      ),
         .calculation (calculation ),
         .tclk        (s_action_ready)
@@ -83,8 +81,7 @@ module system(
     	.calculation (calculation ),
         .value_left  (value_left  ),
         .op          (op          ),
-        .value_right (value_right ),
-        .invalid     (invalid     )
+        .value_right (value_right )
     );
     
 
@@ -118,7 +115,7 @@ module system(
     ////////////////////////////////////////
     // Display 7 Segments
     quadSevenSeg q7seg(seg,dp,an0,an1,an2,an3,num0,num1,num2,num3,targetClk);
-    assign led = {invalid, overflow, null, sign, op};
+    assign led = {overflow, null, sign, op};
 
     ///////////////////////////////////////
     // Display VGA
@@ -130,7 +127,6 @@ module system(
         .value_left  (value_left),
         .op          (op),
         .value_right (value_right),
-        .invalid     (invalid),
         .calculation (calculation),
         .clk         (clk)
     );

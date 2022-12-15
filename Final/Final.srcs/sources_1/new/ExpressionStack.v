@@ -24,7 +24,6 @@ module ExpressionStack(
     output [15:0] value_left,
     output reg [2:0] op,
     output [15:0] value_right,
-    output reg invalid,
     input [4:0] action,
     input [15:0] calculation,
     input tclk
@@ -67,10 +66,12 @@ module ExpressionStack(
 
     reg [15:0] svalue_left, svalue_right;
     reg [2:0] sop;
+    reg [15:0] scalculation;
     always @(negedge tclk) begin
         sop <= op;
         svalue_left <= value_left;
         svalue_right <= value_right;
+        scalculation <= calculation;
     end
 
 
@@ -85,7 +86,8 @@ module ExpressionStack(
         .action      (action      ),
         .value_left  (svalue_left  ),
         .op          (sop          ),
-        .value_right (svalue_right )
+        .value_right (svalue_right ),
+        .calculation (scalculation)
     );
     
     always @(tclk) begin
@@ -98,7 +100,6 @@ module ExpressionStack(
     end
 
     initial begin
-        invalid = 0;
         op = 3'b100;
         tclk_l = 0;
         tclk_r = 0;

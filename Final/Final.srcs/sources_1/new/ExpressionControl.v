@@ -31,7 +31,8 @@ module ExpressionControl(
     input [4:0] action,
     input [15:0] value_left,
     input [2:0] op,
-    input [15:0] value_right
+    input [15:0] value_right,
+    input [15:0] calculation
     );
 
     wire op_null = op[2];
@@ -40,7 +41,7 @@ module ExpressionControl(
     
     wire value_left_sign = value_left[14];
     wire value_right_sign = value_right[14];
-    // wire calculation_null = calculation[15] == 1;
+    wire calculation_null = calculation[15] == 1;
 
     always @(*) begin
          casez (action[4:2])
@@ -160,30 +161,26 @@ module ExpressionControl(
                     // submit
                     1: begin
                         if (!calculation_null) begin
-                            clk_l <= 1;
-                            opcode_l = 2;
+                            copcode_l = 2;
                             push_num_l = 0;
                             set_num_l = calculation;
 
-                            clk_r = 1;
-                            opcode_r = 2;
+                            copcode_r = 2;
                             push_num_r = 0;
                             set_num_r = {1'b1, 15'b0};
 
-                            aop = 3'b100;             
+                            new_op = 3'b100;             
                         end else begin
                             // default case
-                            clk_l = 0;
-                            opcode_l = 0;
+                            copcode_l = -1;
                             push_num_l = 0;
                             set_num_l = 0;
 
-                            clk_r = 0;
-                            opcode_r = 0;
+                            copcode_r = -1;
                             push_num_r = 0;
                             set_num_r = 0;
 
-                            aop = op;
+                            new_op = op;
                         end
                     end
                     // reset

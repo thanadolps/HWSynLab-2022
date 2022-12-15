@@ -24,8 +24,7 @@ module Calculation(
     output [15:0] calculation,
     input [15:0] value_left,
     input [2:0] op,
-    input [15:0] value_right,
-    input invalid
+    input [15:0] value_right
     );
 
     wire [14:0] A, B;
@@ -59,7 +58,7 @@ module Calculation(
     wire nan_left = value_left[15];
     wire nan_op = op[2];
     wire nan_right = value_right[15];
-    wire calculation_ready = !(nan_left | nan_op | nan_right | invalid);
+    wire calculation_ready = !(nan_left | nan_op | nan_right);
     assign calculation = calculation_ready ? {1'b0, calculation_1} : {1'b1, 15'b0};
 
 

@@ -26,7 +26,6 @@ module VGAOutput(
     input [15:0] value_left,
     input [2:0] op,
     input [15:0] value_right,
-    input invalid,
     input [15:0] calculation,
     input clk
     );
@@ -57,7 +56,6 @@ module VGAOutput(
         .value_left  (value_left  ),
         .op          (op          ),
         .value_right (value_right ),
-        .invalid     (invalid     ),
         .calculation (calculation ),
         .clk         (clk         )
     );

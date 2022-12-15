@@ -27,7 +27,6 @@ module VGARender(
     input [15:0] value_left,
     input [2:0] op,
     input [15:0] value_right,
-    input invalid,
     input [15:0] calculation,
     input clk
     );
