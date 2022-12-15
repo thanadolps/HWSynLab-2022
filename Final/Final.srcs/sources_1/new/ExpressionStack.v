@@ -134,10 +134,14 @@ module ExpressionStack(
                     push_num_l = 0;
                     set_num_l = 0;
 
-                    clk_r = 1;
-                    opcode_r = 3;
+                    clk_r = 0;
+                    opcode_r = 0;
                     push_num_r = 0;
                     set_num_r = 0;
+                    // clk_r = 1;
+                    // opcode_r = 3;
+                    // push_num_r = 0;
+                    // set_num_r = 0;
 
                     aop = op;
                 end else begin
@@ -276,12 +280,11 @@ module ExpressionStack(
     always @(clk) begin
         sclk_l <= clk_l & clk;
         sclk_r <= clk_r & clk;
-        op <= aop; 
     end
 
-    /*always @(posedge clk) begin
-        
-    end*/
+    always @(posedge clk) begin
+        op <= aop;
+    end
 
 
 
