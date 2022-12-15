@@ -47,58 +47,86 @@ module testExpressionStack(
         .invalid     (invalid     ),
         .action      (action      ),
         .calculation (calculation ),
-        .clk         (clk)
+        .tclk        (clk)
     );
 
     initial begin
         #5
         action = 5'b10001; // sub
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
+        #5
+        action = 5'b10001; // sub
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd5};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd7};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd3};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd9};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = 5'b10001; // sub
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = 5'b10001; // sub
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd2};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd7};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd0};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
         action = {1'b0, 4'd8};
-        clk = 0; #1;
-        clk = 1;
+        clk = 1; #1;
+        clk = 0;
         #5
-        action = 5'b10101; // submit
-        clk = 0; #1;
-        clk = 1;
+        action = {3'b101, 2'd0};
+        clk = 1; #1;
+        clk = 0;
+        #5
+        action = {3'b101, 2'd0};
+        clk = 1; #1;
+        clk = 0;
+        #5
+        action = {3'b101, 2'd0};
+        clk = 1; #1;
+        clk = 0;
+        #5
+        action = {3'b101, 2'd0};
+        clk = 1; #1;
+        clk = 0;
+        #5
+        action = {3'b101, 2'd0};
+        clk = 1; #1;
+        clk = 0;
+        #5
+        action = {3'b101, 2'd0};
+        clk = 1; #1;
+        clk = 0;
+        // #5
+        // action = 5'b10101; // submit
+        // clk = 0; #1;
+        // clk = 1;
     end
 
 endmodule

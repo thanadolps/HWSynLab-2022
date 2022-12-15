@@ -53,6 +53,14 @@ module system(
     wire action_ready;
     actionInput (action, action_ready, data, data_ready);
 
+    // Syncronize
+    reg [4:0] s_action;
+    reg s_action_ready;
+    always @(posedge clk) begin
+        s_action <= action;
+        s_action_ready <= action_ready;
+    end
+
     ////////////////////////////////////////
     // ExpressionStack
     wire [15:0] value_left, value_right, calculation;
@@ -64,9 +72,9 @@ module system(
         .op          (op          ),
         .value_right (value_right ),
         .invalid     (invalid     ),
-        .action      (action      ),
+        .action      (s_action      ),
         .calculation (calculation ),
-        .clk         (action_ready)
+        .tclk        (s_action_ready)
     );
 
     ////////////////////////////////////////
