@@ -21,7 +21,7 @@
 
 
 module VGATextFlow #(
-    parameter N = 9,
+    parameter N = 11,
     parameter PAD = 16
 )(
     output [4:0] char,

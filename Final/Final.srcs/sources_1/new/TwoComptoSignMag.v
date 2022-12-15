@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 14.12.2022 13:43:42
+// Create Date: 12/15/2022 10:00:19 AM
 // Design Name: 
-// Module Name: SignMagtoTwoComp
+// Module Name: TwoComptoSignMag
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,17 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module SignMagtoTwoComp (input [14:0] signed_mag, output reg [14:0] two_comp);
+module TwoComptoSignMag (input [14:0] two_comp, output reg [14:0] signed_mag);
 
   // Check the sign bit of the input
   always @(*) begin
-    if (signed_mag[14] == 0) begin
+    if (two_comp[14] == 0) begin
       // If the sign bit is 0, the number is positive, so just copy the input to the output
-      two_comp = signed_mag;
+      signed_mag = two_comp;
     end else begin
-      // If the sign bit is 1, the number is negative, so invert all the bits and add 1 to get the two's complement representation
-      two_comp = {1'b1, ~signed_mag[13:0] + 1};
+      // If the sign bit is 1, the number is negative, so invert all the bits and add 1 to get the signed magnitude representation
+      signed_mag = {1'b1, ~two_comp[13:0] + 1};
     end
   end
 
 endmodule
+
+

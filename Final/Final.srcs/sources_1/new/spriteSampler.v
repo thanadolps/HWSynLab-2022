@@ -33,8 +33,8 @@ module spriteSampler (
     input [9:0] msy
 );
 
-    wire [9:0] _sample_x = msx*(x-px)/10;
-    wire [9:0] _sample_y = msy*(y-py)/10;
+    wire [19:0] _sample_x = msx*(x-px)/10;
+    wire [19:0] _sample_y = msy*(y-py)/10;
     wire out_of_bound = (px > x) | (py > y) | (_sample_x > w) | (_sample_y > h);
     
     assign sample_x = out_of_bound ? (0) : _sample_x;

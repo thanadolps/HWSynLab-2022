@@ -21,51 +21,97 @@
 
 
 module system(
-    // output [6:0] seg,
-    // output dp,
-    // output [3:0] an,
-    // output [2:0] led,
+    output [6:0] seg,
+    output dp,
+    output [3:0] an,
+    output [6:0] led,
     output [3:0] vgaRed,
     output [3:0] vgaGreen,
     output [3:0] vgaBlue,
     output Hsync,
     output Vsync,
-    // input RsRx,
+    input RsRx,
+    input [1:0] sw,
     input clk
     );
         
     ////////////////////////////////////////
     // Clock
-    // wire targetClk;
-    // clockReducer #(.TARGET_FREQ(400)) sevenseg_timing(targetClk, clk);
+    wire targetClk;
+    clockReducer #(.TARGET_FREQ(400)) sevenseg_timing(targetClk, clk);
 
 
     ////////////////////////////////////////
     // Uart
-    // wire [7:0] data;
-    // wire data_ready;
-    // uartInput (data, data_ready, RsRx, clk);
+    wire [7:0] data;
+    wire data_ready;
+    uartInput (data, data_ready, RsRx, clk);
 
     ////////////////////////////////////////
     // Uart -> Action
-    // wire [4:0] action;
-    // wire action_ready;
-    // actionInput (action, action_ready, data, data_ready);
+    wire [4:0] action;
+    wire action_ready;
+    actionInput (action, action_ready, data, data_ready);
+
+    ////////////////////////////////////////
+    // ExpressionStack
+    wire [15:0] value_left, value_right, calculation;
+    wire [2:0] op; 
+    wire invalid;
+
+    ExpressionStack expr(
+    	.value_left  (value_left  ),
+        .op          (op          ),
+        .value_right (value_right ),
+        .invalid     (invalid     ),
+        .action      (action      ),
+        .calculation (calculation ),
+        .clk         (action_ready)
+    );
+
+    ////////////////////////////////////////
+    // Calculation
+    Calculation (
+    	.calculation (calculation ),
+        .value_left  (value_left  ),
+        .op          (op          ),
+        .value_right (value_right ),
+        .invalid     (invalid     )
+    );
+    
+
 
     ////////////////////////////////////////
     // Assign number
-    // wire [3:0] num3, num2, num1, num0;
+    // unpacking
+    wire null = (sw == 2'b00) ? value_left[15] : (sw == 2'b01) ? value_right[15] : calculation[15];
+    wire sign = (sw == 2'b00) ? value_left[14] : (sw == 2'b01) ? value_right[14]: calculation[14];
+    wire [13:0] mag = (sw == 2'b00) ? value_left[13:0] : (sw == 2'b01) ? value_right[13:0] : calculation[13:0];
+
+    wire overflow = mag > 9999;
+
+    // digit extraction
+    wire [3:0] thousandth = (mag / 1000) % 10;
+    wire [3:0] hundredth = (mag / 100) % 10;
+    wire [3:0] tenth = (mag / 10) % 10;
+    wire [3:0] oneth = mag % 10;
+
+    wire [3:0] num3, num2, num1, num0;
+    assign {num3, num2, num1, num0} = {
+        thousandth,
+        hundredth,
+        tenth,
+        oneth
+    };
     
-    // assign {num3, num2, num1, num0} = {action[4:0], data[7:0]};
-    
-    // wire an0,an1,an2,an3;
-    // assign an = {an3,an2,an1,an0};
+    wire an0,an1,an2,an3;
+    assign an = {an3,an2,an1,an0};
     
     ////////////////////////////////////////
     // Display 7 Segments
-    // quadSevenSeg q7seg(seg,dp,an0,an1,an2,an3,num0,num1,num2,num3,targetClk);
-    // assign led[2:0] = {1'b0, action_ready, data_ready};
-    
+    quadSevenSeg q7seg(seg,dp,an0,an1,an2,an3,num0,num1,num2,num3,targetClk);
+    assign led = {invalid, overflow, null, sign, op};
+
     ///////////////////////////////////////
     // Display VGA
 
@@ -73,10 +119,11 @@ module system(
     	.rgb   ({vgaRed, vgaGreen, vgaBlue}),
         .hsync (Hsync),
         .vsync (Vsync),
-        .value_left  (16'd123),
-        .op          (3'b001),
-        .value_right (16'd456),
-        .invalid     (1'b0),
+        .value_left  (value_left),
+        .op          (op),
+        .value_right (value_right),
+        .invalid     (invalid),
+        .calculation (calculation),
         .clk         (clk)
     );
 

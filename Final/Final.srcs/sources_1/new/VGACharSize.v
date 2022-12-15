@@ -26,24 +26,24 @@ module VGACharSize(
     input [4:0] char // 0123456789+-*/=Na
 );
 
-    localparam M_H = 158;
-    localparam M0_W = 90;
-    localparam M1_W = 58;
-    localparam M2_W = 87;
-    localparam M3_W = 91;
-    localparam M4_W = 99;
-    localparam M5_W = 90;
-    localparam M6_W = 92;
-    localparam M7_W = 81;
-    localparam M8_W = 94;
-    localparam M9_W = 90;
-    localparam M_add_W = 96;
-    localparam M_sub_W = 62;
-    localparam M_mul_W = 60;
-    localparam M_div_W = 77;
-    localparam M_eq_W = 76;
-    localparam M_N_W = 93;
-    localparam M_a_W = 79;
+    localparam M_H = 79;
+    localparam M0_W = 47;
+    localparam M1_W = 30;
+    localparam M2_W = 45;
+    localparam M3_W = 47;
+    localparam M4_W = 51;
+    localparam M5_W = 46;
+    localparam M6_W = 47;
+    localparam M7_W = 42;
+    localparam M8_W = 48;
+    localparam M9_W = 47;
+    localparam M_add_W = 49;
+    localparam M_sub_W = 32;
+    localparam M_mul_W = 32;
+    localparam M_div_W = 40;
+    localparam M_eq_W = 40;
+    localparam M_N_W = 47;
+    localparam M_a_W = 41;
 
     assign h = M_H;
 
