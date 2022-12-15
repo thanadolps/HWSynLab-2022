@@ -68,103 +68,103 @@ module ExpressionStack(
     wire value_right_null = value_right[15] == 1;
     wire calculation_null = calculation[15] == 1;
 
-    always @(*) begin
+    always @(clk) begin
         casez (action[4:2])
             3'b0??: 
                 if (op_null) begin
                     // push left
 
-                    clk_l = 1;
-                    opcode_l = 0;
-                    push_num_l = action[3:0];
-                    set_num_l = 0;
+                    clk_l <= 1;
+                    opcode_l <= 0;
+                    push_num_l <= action[3:0];
+                    set_num_l <= 0;
 
-                    clk_r = 0;
-                    opcode_r = 0;
-                    push_num_r = 0;
-                    set_num_r = 0;
+                    clk_r <= 0;
+                    opcode_r <= 0;
+                    push_num_r <= 0;
+                    set_num_r <= 0;
 
-                    aop = op;  
+                    aop <= op;  
                 end else begin
                     // push right
 
-                    clk_l = 0;
-                    opcode_l = 0;
-                    push_num_l = 0;
-                    set_num_l = 0;
+                    clk_l <= 0;
+                    opcode_l <= 0;
+                    push_num_l <= 0;
+                    set_num_l <= 0;
 
-                    clk_r = 1;
-                    opcode_r = 0;
-                    push_num_r = action[3:0];
-                    set_num_r = 0;
+                    clk_r <= 1;
+                    opcode_r <= 0;
+                    push_num_r <= action[3:0];
+                    set_num_r <= 0;
 
-                    aop = op;
+                    aop <= op;
                 end
             3'b100: 
                 if(value_left_null & action[1:0] == 1) begin
                     // negate left
-                    clk_l = 1;
-                    opcode_l = 3;
-                    push_num_l = 0;
-                    set_num_l = 0;
+                    clk_l <= 1;
+                    opcode_l <= 3;
+                    push_num_l <= 0;
+                    set_num_l <= 0;
 
-                    clk_r = 0;
-                    opcode_r = 0;
-                    push_num_r = 0;
-                    set_num_r = 0;
+                    clk_r <= 0;
+                    opcode_r <= 0;
+                    push_num_r <= 0;
+                    set_num_r <= 0;
 
-                    aop = op;
+                    aop <= op;
                 end else if(!value_left_null & op_null) begin
                     // set op
-                    clk_l = 0;
-                    opcode_l = 0;
-                    push_num_l = 0;
-                    set_num_l = 0;
+                    clk_l <= 0;
+                    opcode_l <= 0;
+                    push_num_l <= 0;
+                    set_num_l <= 0;
 
-                    clk_r = 0;
-                    opcode_r = 0;
-                    push_num_r = 0;
-                    set_num_r = 0;
+                    clk_r <= 0;
+                    opcode_r <= 0;
+                    push_num_r <= 0;
+                    set_num_r <= 0;
 
-                    aop = action[1:0];
-                end else if(!op_null & action[1:0] == 1) begin 
+                    aop <= action[1:0];
+                end else if(!op_null & !aop[2] & action[1:0] == 1) begin 
                     // negate right
-                    clk_l = 0;
-                    opcode_l = 0;
-                    push_num_l = 0;
-                    set_num_l = 0;
+                    clk_l <= 0;
+                    opcode_l <= 0;
+                    push_num_l <= 0;
+                    set_num_l <= 0;
 
-                    clk_r = 0;
-                    opcode_r = 0;
-                    push_num_r = 0;
-                    set_num_r = 0;
-                    // clk_r = 1;
-                    // opcode_r = 3;
+                    // clk_r = 0;
+                    // opcode_r = 0;
                     // push_num_r = 0;
                     // set_num_r = 0;
+                    clk_r <= 1;
+                    opcode_r <= 3;
+                    push_num_r <= 0;
+                    set_num_r <= 0;
 
-                    aop = op;
+                    aop <= op;
                 end else begin
                     // default case
-                    clk_l = 0;
-                    opcode_l = 0;
-                    push_num_l = 0;
-                    set_num_l = 0;
+                    clk_l <= 0;
+                    opcode_l <= 0;
+                    push_num_l <= 0;
+                    set_num_l <= 0;
 
-                    clk_r = 0;
-                    opcode_r = 0;
-                    push_num_r = 0;
-                    set_num_r = 0;
+                    clk_r <= 0;
+                    opcode_r <= 0;
+                    push_num_r <= 0;
+                    set_num_r <= 0;
 
-                    aop = op;
+                    aop <= op;
                 end
             3'b101:
                 case (action[1:0])
-                    // backspace
+                    // // backspace
                     // 0: begin
                     //     if (!value_right_null) begin
                     //         // pop right
-                    //         clk_l = 0;
+                    //         clk_l <= 0;
                     //         opcode_l = 0;
                     //         push_num_l = 0;
                     //         set_num_l = 0;
@@ -234,45 +234,45 @@ module ExpressionStack(
                     // end
                     // reset
                     2: begin
-                        clk_l = 1;
-                        opcode_l = 2;
-                        push_num_l = 0;
-                        set_num_l = {1'b1, 15'b0};
+                        clk_l <= 1;
+                        opcode_l <= 2;
+                        push_num_l <= 0;
+                        set_num_l <= {1'b1, 15'b0};
 
-                        clk_r = 1;
-                        opcode_r = 2;
-                        push_num_r = 0;
-                        set_num_r = {1'b1, 15'b0};
+                        clk_r <= 1;
+                        opcode_r <= 2;
+                        push_num_r <= 0;
+                        set_num_r <= {1'b1, 15'b0};
 
-                        aop = 3'b100;
-                        // invalid = 0;                      
+                        aop <= 3'b100;
+                        // invalid <= 0;                      
                     end
                     default: begin
-                        clk_l = 0;
-                        opcode_l = 0;
-                        push_num_l = 0;
-                        set_num_l = 0;
+                        clk_l <= 0;
+                        opcode_l <= 0;
+                        push_num_l <= 0;
+                        set_num_l <= 0;
 
-                        clk_r = 0;
-                        opcode_r = 0;
-                        push_num_r = 0;
-                        set_num_r = 0;
+                        clk_r <= 0;
+                        opcode_r <= 0;
+                        push_num_r <= 0;
+                        set_num_r <= 0;
 
-                        aop = op; 
+                        aop <= op; 
                     end
                 endcase
             default: begin
-                clk_l = 0;
-                opcode_l = 0;
-                push_num_l = 0;
-                set_num_l = 0;
+                clk_l <= 0;
+                opcode_l <= 0;
+                push_num_l <= 0;
+                set_num_l <= 0;
 
-                clk_r = 0;
-                opcode_r = 0;
-                push_num_r = 0;
-                set_num_r = 0;
+                clk_r <= 0;
+                opcode_r <= 0;
+                push_num_r <= 0;
+                set_num_r <= 0;
 
-                aop = op;
+                aop <= op;
             end
         endcase
     end
