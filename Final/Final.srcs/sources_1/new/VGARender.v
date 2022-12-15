@@ -49,8 +49,8 @@ module VGARender(
     ////////////////////////////////
     // Background rendering
     wire [9:0] bg_x, bg_y;
-    reg [9:0] bg_offset_x=0;
-    wire [9:0] ox = (x + bg_offset_x)%WIDTH;
+    reg [9:0] offset_x=0, offset_y=0;
+    wire [9:0] ox = (x + offset_x)%WIDTH;
 
     spriteSampler bg_sampler(
         .sample_x(bg_x), .sample_y(bg_y), .x(ox), .y(y), .w(WIDTH/2), .h(HEIGHT/2), .px(0), .py(0), .msx(5), .msy(5)
@@ -58,7 +58,8 @@ module VGARender(
     wire [11:0] bg_color = background[WIDTH*bg_y + bg_x];
 
     always @(posedge frame) begin
-        bg_offset_x <= (bg_offset_x + 1)%WIDTH;
+        offset_x <= (offset_x + 1)%WIDTH;
+        offset_y <= (offset_y + 1)%HEIGHT;
     end
 
 
@@ -121,8 +122,27 @@ module VGARender(
     VGACharRender char_render(char_mask, char_x, char_y, char);
 
     ////////////////////////////////
+    // gradient
+    wire [9:0] tx = (x + offset_x)%WIDTH;
+    wire [9:0] ty = (y + offset_y)%HEIGHT;
+
+    wire [9:0] ppx = (tx <= WIDTH/2) ? tx : ((WIDTH/2)-(tx-WIDTH/2));
+    wire [9:0] ppy = (ty <= HEIGHT/2) ? ty : ((HEIGHT/2)-(ty-HEIGHT/2));
+
+    wire [19:0] k = ppx + ppy;
+    wire [19:0] MAX_K = WIDTH/2 + HEIGHT/2;
+
+    // CDC
+
+    wire [19:0] char_color_red = (20'hA*(MAX_K-k) + 20'h6*k)/MAX_K;
+    wire [19:0] char_color_blue = (20'hF*(MAX_K-k) + 20'h8*k)/MAX_K;
+    wire [19:0] char_color_green = (20'hD*(MAX_K-k) + 20'hF*k)/MAX_K;
+
+    wire [11:0] char_color = {char_color_red[3:0], char_color_green[3:0], char_color_blue[3:0]};
+
     // Combine color
-    assign color = char_mask ? 12'hFFF : bg_color;
+    assign color = char_mask ? char_color : bg_color;
+
 
 
 endmodule
