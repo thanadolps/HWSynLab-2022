@@ -55,7 +55,15 @@ module VGARender(
     spriteSampler bg_sampler(
         .sample_x(bg_x), .sample_y(bg_y), .x(ox), .y(y), .w(WIDTH/2), .h(HEIGHT/2), .px(0), .py(0), .msx(5), .msy(5)
     );
-    wire [11:0] bg_color = background[WIDTH*bg_y + bg_x];
+
+    wire [11:0] bg_color_norm = background[WIDTH*bg_y + bg_x];
+
+    wire [9:0] bg_x_err = (bg_x+1)%WIDTH;
+    wire [9:0] bg_y_err = (bg_y+1)%HEIGHT;
+    wire [11:0] bg_color_err = background[WIDTH*bg_y_err + bg_x_err] - bg_color_norm;
+
+    wire invalid = (value_left[13:0] > 9999);
+    wire [11:0] bg_color = invalid ? bg_color_err : bg_color_norm;
 
     always @(posedge frame) begin
         offset_x <= (offset_x + 1)%WIDTH;
@@ -131,8 +139,6 @@ module VGARender(
 
     wire [19:0] k = ppx + ppy;
     wire [19:0] MAX_K = WIDTH/2 + HEIGHT/2;
-
-    // CDC
 
     wire [19:0] char_color_red = (20'hA*(MAX_K-k) + 20'h6*k)/MAX_K;
     wire [19:0] char_color_blue = (20'hF*(MAX_K-k) + 20'h8*k)/MAX_K;
